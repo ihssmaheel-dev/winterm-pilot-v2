@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 
 const KBD_RE = /(Ctrl\+[A-Za-z0-9]+|Alt\+[A-Za-z0-9]+|Shift\+[A-Za-z0-9]+|Ctrl\+Shift\+[A-Za-z0-9]+|Enter|↑|↓|←|→|Tab)/g
@@ -183,6 +183,33 @@ The output panel shows the generated script. Click the copy icon to copy it to y
 export function DocsPage() {
   const navigate = useNavigate()
   const location = useLocation()
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+    const onScroll = () => setScrolled(el.scrollTop > 300)
+    el.addEventListener('scroll', onScroll, { passive: true })
+    return () => el.removeEventListener('scroll', onScroll)
+  }, [])
+
+  function scrollToTop() {
+    const el = containerRef.current
+    if (!el) return
+    const start = el.scrollTop
+    const duration = 600
+    const startTime = performance.now()
+    const target = el
+
+    function tick(now: number) {
+      const t = Math.min((now - startTime) / duration, 1)
+      const ease = t * t * t * t
+      target.scrollTop = start * (1 - ease)
+      if (t < 1) requestAnimationFrame(tick)
+    }
+    requestAnimationFrame(tick)
+  }
 
   useEffect(() => {
     const hash = location.hash.replace('#', '')
@@ -195,7 +222,7 @@ export function DocsPage() {
   }, [location.hash])
 
   return (
-    <div className="fixed inset-0 z-50 bg-bg-base overflow-y-auto">
+    <div ref={containerRef} className="fixed inset-0 z-50 bg-bg-base overflow-y-auto">
       {/* Background */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div
@@ -324,6 +351,18 @@ export function DocsPage() {
             View on GitHub
           </a>
         </div>
+
+        {/* Scroll to top */}
+        {scrolled && (
+          <button
+            onClick={scrollToTop}
+            className="fixed bottom-6 right-6 z-50 w-9 h-9 rounded-full bg-accent text-text-inv shadow-[0_4px_16px_rgba(0,0,0,0.3)] flex items-center justify-center hover:brightness-110 transition-all cursor-pointer border-none"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M7 12V3M3 7l4-4 4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        )}
       </div>
     </div>
   )
