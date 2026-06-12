@@ -109,7 +109,7 @@ function useTypingEffect(lines: { text: string; delay: number }[]) {
 
   useEffect(() => {
     if (done) return
-    if (lineIdx >= lines.length) { setDone(true); return }
+    if (lineIdx >= lines.length) { const t = setTimeout(() => setDone(true), 0); return () => clearTimeout(t) }
 
     const line = lines[lineIdx]
     if (charIdx < line.text.length) {

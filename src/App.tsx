@@ -1,11 +1,12 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Routes, Route, useNavigate } from 'react-router-dom'
 import { useStore } from '@/store/useStore'
-import { LaunchScreen } from '@/components/LaunchScreen'
 import { AppPage } from '@/components/AppPage'
-import { DocsPage } from '@/components/DocsPage'
 import { Toast } from '@/components/ui/Toast'
 import type { SavedState } from '@/types'
+
+const LaunchScreen = lazy(() => import('@/components/LaunchScreen').then(m => ({ default: m.LaunchScreen })))
+const DocsPage = lazy(() => import('@/components/DocsPage').then(m => ({ default: m.DocsPage })))
 
 export default function App() {
   const navigate = useNavigate()
@@ -37,9 +38,9 @@ export default function App() {
   return (
     <>
       <Routes>
-        <Route path="/" element={<LaunchScreen onOpen={() => navigate('/app')} />} />
+        <Route path="/" element={<Suspense fallback={null}><LaunchScreen onOpen={() => navigate('/app')} /></Suspense>} />
         <Route path="/app" element={<AppPage />} />
-        <Route path="/docs" element={<DocsPage />} />
+        <Route path="/docs" element={<Suspense fallback={null}><DocsPage /></Suspense>} />
       </Routes>
       <Toast />
     </>

@@ -5,6 +5,7 @@ import { useStore } from '@/store/useStore'
 import { PANE_COLORS } from '@/types'
 import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
+import { downloadJsonFile, downloadTextFile, getScriptContent } from '@/lib/export'
 
 interface MenuItem {
   label: string
@@ -15,14 +16,12 @@ interface MenuItem {
   submenu?: { label: string; action: () => void; checked?: boolean }[]
 }
 
-const menuBarLabels = ['File', 'Edit', 'View', 'Help']
-
 function MenuDropdown({ label, items, isOpen, onToggle, onMouseEnter }: { label: string; items: MenuItem[]; isOpen: boolean; onToggle: () => void; onMouseEnter: () => void }) {
   const ref = useRef<HTMLDivElement>(null)
   const [activeSub, setActiveSub] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!isOpen) setActiveSub(null)
+    if (!isOpen) { const t = setTimeout(() => setActiveSub(null), 0); return () => clearTimeout(t) }
   }, [isOpen])
 
   return (
@@ -140,18 +139,14 @@ export function TitleBar() {
   const resetProject = useStore((s) => s.resetProject)
   const undo = useStore((s) => s.undo)
   const redo = useStore((s) => s.redo)
-  const history = useStore((s) => s.history)
-  const future = useStore((s) => s.future)
   const splitSelected = useStore((s) => s.splitSelected)
   const deleteSelected = useStore((s) => s.deleteSelected)
   const fullscreen = useStore((s) => s.fullscreen)
   const setFullscreen = useStore((s) => s.setFullscreen)
   const theme = useStore((s) => s.theme)
   const setTheme = useStore((s) => s.setTheme)
-  const totalPaneCount = useStore((s) => s.totalPaneCount())
   const selectedPane = useStore((s) => s.selectedPane())
   const togglePaneZoom = useStore((s) => s.togglePaneZoom)
-  const outputFormat = useStore((s) => s.outputFormat)
   const [activeMenu, setActiveMenu] = useState<string | null>(null)
   const [showAbout, setShowAbout] = useState(false)
 
@@ -209,28 +204,15 @@ export function TitleBar() {
             },
             {
               label: 'Export Layout', shortcut: 'Ctrl+E', action: () => {
-                const data = useStore.getState().toJSON()
-                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
-                const a = document.createElement('a')
-                a.href = URL.createObjectURL(blob)
-                a.download = `${useStore.getState().projectName || 'layout'}.json`
-                document.body.appendChild(a); a.click(); document.body.removeChild(a)
-                URL.revokeObjectURL(a.href)
+                downloadJsonFile(useStore.getState().toJSON(), `${useStore.getState().projectName || 'layout'}.json`)
               },
               icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v8M3 6l3 3 3-3M11 10H1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
             },
             { divider: true, label: '', action: () => {} },
             {
               label: 'Download Script', shortcut: 'Alt+S', action: () => {
-                const el = document.getElementById('scriptOut')
-                if (!el) return
-                const content = el.textContent || ''
-                const blob = new Blob([content], { type: 'text/plain' })
-                const a = document.createElement('a')
-                a.href = URL.createObjectURL(blob)
-                a.download = `${useStore.getState().projectName || 'launcher'}.bat`
-                document.body.appendChild(a); a.click(); document.body.removeChild(a)
-                URL.revokeObjectURL(a.href)
+                const content = getScriptContent()
+                if (content) downloadTextFile(content, `${useStore.getState().projectName || 'launcher'}.bat`)
               },
               icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v8M3.5 6.5L6 9l2.5-2.5M1.5 11h9" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
             },

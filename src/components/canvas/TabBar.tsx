@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react'
 import { useStore } from '@/store/useStore'
 import { esc } from '@/lib/utils'
+import { PANE_COLORS } from '@/types'
 import {
   DndContext,
   closestCenter,
@@ -49,17 +50,6 @@ function SortableTab({ id, name, color, isActive, onSelect, onRemove, canRemove,
   }, [editVal, onRename])
 
   const [showColorPicker, setShowColorPicker] = useState(false)
-
-  const TAB_COLORS = [
-    { name: 'None', value: '' },
-    { name: 'Cyan', value: '#00e5ff' },
-    { name: 'Blue', value: '#3b78ff' },
-    { name: 'Green', value: '#13a10e' },
-    { name: 'Amber', value: '#c19c00' },
-    { name: 'Orange', value: '#f5a623' },
-    { name: 'Rose', value: '#f06a6a' },
-    { name: 'Purple', value: '#881798' },
-  ]
 
   return (
     <div
@@ -123,7 +113,7 @@ function SortableTab({ id, name, color, isActive, onSelect, onRemove, canRemove,
                 className="absolute top-[18px] left-0 z-50 bg-bg-elevated border border-border-med rounded-[6px] p-2 flex gap-1 flex-wrap w-[120px] shadow-[0_8px_24px_rgba(0,0,0,0.3)]"
                 onClick={(e) => e.stopPropagation()}
               >
-                {TAB_COLORS.map((tc) => (
+                {PANE_COLORS.map((tc) => (
                   <button
                     key={tc.value}
                     onClick={() => { useStore.getState().setTabColor(id, tc.value || undefined); setShowColorPicker(false) }}

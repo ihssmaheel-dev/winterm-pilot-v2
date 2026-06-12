@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { motion } from 'framer-motion'
+
 
 const SECTIONS = [
   {
@@ -219,7 +219,7 @@ export function DocsPage() {
         </div>
 
         {/* Sections */}
-        {SECTIONS.map((section, i) => (
+        {SECTIONS.map((section) => (
           <div
             key={section.id}
             id={section.id}

@@ -50,7 +50,7 @@ export function resizeSplit(r: TreeNode, splitId: string, childIndex: number, de
   if (r.id === splitId && r.type === 'split') {
     const sizes = [...r.sizes]
     const minSize = 15
-    let clamped = 0
+    let clamped
     if (delta > 0) {
       const maxGrow = sizes[childIndex + 1] - minSize
       clamped = Math.min(delta, maxGrow)

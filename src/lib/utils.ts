@@ -1,7 +1,5 @@
-let _uid = 0
-
 export function uid(): string {
-  return 'n' + ++_uid
+  return crypto.randomUUID()
 }
 
 export function esc(s: string): string {
@@ -10,6 +8,8 @@ export function esc(s: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/`/g, '&#x60;')
 }
 
 export function debounce<T extends (...args: unknown[]) => void>(fn: T, ms: number) {

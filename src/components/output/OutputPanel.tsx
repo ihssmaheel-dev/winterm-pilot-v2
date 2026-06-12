@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useStore } from '@/store/useStore'
 import { generateWT, generateBat } from '@/lib/generators'
 import { showToast } from '@/hooks/useKeyboard'
+import { downloadTextFile, copyToClipboard } from '@/lib/export'
 
 export function OutputPanel() {
   const tabs = useStore((s) => s.tabs)
@@ -16,18 +17,11 @@ export function OutputPanel() {
   }, [tabs, outputFormat, fullscreen, maximized, projectName])
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(script).then(() => showToast('Copied to clipboard'))
+    copyToClipboard(script).then(() => showToast('Copied to clipboard')).catch(() => showToast('Failed to copy'))
   }
 
   const handleDownload = () => {
-    const blob = new Blob([script], { type: 'text/plain' })
-    const a = document.createElement('a')
-    a.href = URL.createObjectURL(blob)
-    a.download = `${projectName || 'launcher'}.bat`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(a.href)
+    downloadTextFile(script, `${projectName || 'launcher'}.bat`)
     showToast('Script downloaded')
   }
 

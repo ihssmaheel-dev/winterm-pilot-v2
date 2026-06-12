@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import type { Pane as PaneType } from '@/types'
 import { useStore } from '@/store/useStore'
 import { getScheme } from '@/lib/colorSchemes'
@@ -7,9 +8,18 @@ interface PaneNodeProps {
   node: PaneType
 }
 
+function hashCode(s: string): number {
+  let hash = 0
+  for (let i = 0; i < s.length; i++) {
+    hash = ((hash << 5) - hash) + s.charCodeAt(i)
+    hash |= 0
+  }
+  return hash
+}
+
 function TerminalLine({ text, color = 'green/85', indent = 0 }: { text: string; color?: string; indent?: number }) {
   const prefixes = ['✓', '✗', '>', '•', '◉', '○', '◆', '→']
-  const prefix = prefixes[Math.floor(Math.random() * prefixes.length)]
+  const prefix = prefixes[text.length % prefixes.length]
   return (
     <div className={`text-${color} truncate`} style={{ paddingLeft: indent * 6 }}>
       <span className="opacity-50 mr-[3px]">{prefix}</span>{esc(text)}
@@ -47,7 +57,10 @@ export function PaneNode({ node }: PaneNodeProps) {
   const scheme = node.colorScheme ? getScheme(node.colorScheme) : undefined
   const dir = node.workingDirectory.split('\\').pop() || node.workingDirectory.split('/').pop() || 'project'
   const cmds = node.commands.filter((c) => c.trim()).slice(0, 3)
-  const statusMsg = STATUS_MESSAGES[Math.floor(Math.random() * STATUS_MESSAGES.length)]
+  const statusMsg = useMemo(
+    () => STATUS_MESSAGES[Math.abs(hashCode(node.id)) % STATUS_MESSAGES.length],
+    [node.id],
+  )
 
   const borderColor = sel
     ? node.color || 'var(--color-accent)'

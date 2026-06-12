@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useStore } from '@/store/useStore'
+import { downloadTextFile, getScriptContent, copyToClipboard } from '@/lib/export'
 
 export function useKeyboard() {
   useEffect(() => {
@@ -57,10 +58,10 @@ export function useKeyboard() {
           if (sp) s.togglePaneZoom(sp.id)
           break
         }
-        case 'ArrowUp': s.focusUp(); break
-        case 'ArrowDown': s.focusDown(); break
-        case 'ArrowLeft': s.focusLeft(); break
-        case 'ArrowRight': s.focusRight(); break
+        case 'ArrowUp': s.focusDirection('up'); break
+        case 'ArrowDown': s.focusDirection('down'); break
+        case 'ArrowLeft': s.focusDirection('left'); break
+        case 'ArrowRight': s.focusDirection('right'); break
       }
     }
     window.addEventListener('keydown', handler)
@@ -69,27 +70,17 @@ export function useKeyboard() {
 }
 
 function downloadScript() {
-  const scriptEl = document.getElementById('scriptOut')
-  if (!scriptEl) return
-  const content = scriptEl.textContent || ''
-  const blob = new Blob([content], { type: 'text/plain' })
-  const a = document.createElement('a')
-  a.href = URL.createObjectURL(blob)
-  a.download = `${useStore.getState().projectName || 'launcher'}.bat`
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(a.href)
+  const content = getScriptContent()
+  if (!content) return
+  downloadTextFile(content, `${useStore.getState().projectName || 'launcher'}.bat`)
   showToast('Script downloaded')
 }
 
 function copyScript() {
-  const scriptEl = document.getElementById('scriptOut')
-  if (!scriptEl) return
-  navigator.clipboard.writeText(scriptEl.textContent || '').then(() => showToast('Copied to clipboard'))
+  const content = getScriptContent()
+  if (!content) return
+  copyToClipboard(content).then(() => showToast('Copied to clipboard')).catch(() => showToast('Failed to copy'))
 }
-
-let _toastTimer: ReturnType<typeof setTimeout>
 let _toastCallback: ((msg: string) => void) | null = null
 
 export function setToastCallback(fn: (msg: string) => void) {

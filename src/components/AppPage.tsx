@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { useStore } from '@/store/useStore'
 import { TitleBar } from '@/components/titlebar/TitleBar'
 import { Toolbar } from '@/components/toolbar/Toolbar'
@@ -10,11 +10,11 @@ import { Modal } from '@/components/ui/Modal'
 import { Button } from '@/components/ui/Button'
 import { useKeyboard, setToastCallback } from '@/hooks/useKeyboard'
 import { motion, AnimatePresence } from 'framer-motion'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 export function AppPage() {
   const resetProject = useStore((s) => s.resetProject)
   const saveAutoVersion = useStore((s) => s.saveAutoVersion)
-  const setTheme = useStore((s) => s.setTheme)
   const theme = useStore((s) => s.theme)
   const [showNewDialog, setShowNewDialog] = useState(false)
   const [toastMsg, setToastMsg] = useState<string | null>(null)
@@ -101,10 +101,16 @@ export function AppPage() {
         Starting a new project will discard your current layout and all pane settings. This cannot be undone.
       </Modal>
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
+        <ErrorBoundary>
+          <Sidebar />
+        </ErrorBoundary>
         <div className="flex flex-col flex-1 overflow-hidden bg-bg-base">
-          <Canvas />
-          <OutputPanel />
+          <ErrorBoundary>
+            <Canvas />
+          </ErrorBoundary>
+          <ErrorBoundary>
+            <OutputPanel />
+          </ErrorBoundary>
         </div>
       </div>
       <StatusBar />

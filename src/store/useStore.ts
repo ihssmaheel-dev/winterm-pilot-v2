@@ -6,7 +6,7 @@ import type {
 import { uid } from '@/lib/utils'
 import { findNode, replaceNode, removeNode, updPane, resizeSplit, countPanes, findParentSplit, recalcSizes } from '@/lib/tree'
 import { loadTemplate } from '@/lib/templates'
-import { getPaneRects, findPath } from '@/lib/navigation'
+import { getPaneRects } from '@/lib/navigation'
 
 const MAX_HISTORY = 50
 
@@ -35,6 +35,19 @@ interface AppState {
   outputFormat: OutputFormat
   fullscreen: boolean
   maximized: boolean
+  tabs: Tab[]
+  activeTabId: string
+  selectedPaneId: string | null
+  theme: ThemeConfig
+  snippets: CommandSnippet[]
+  profiles: PaneProfile[]
+  projects: ProjectMeta[]
+  autoSaveVersions: SavedState[]
+  zoomedPaneId: string | null
+  history: SavedState[]
+  future: SavedState[]
+
+  // Actions
   setFullscreen: (v: boolean) => void
   setMaximized: (v: boolean) => void
   setProjectName: (s: string) => void
@@ -47,6 +60,35 @@ interface AppState {
   undo: () => void
   redo: () => void
   pushHistory: () => void
+
+  // Tabs
+  addTab: () => void
+  removeTab: (id: string) => void
+  switchTab: (id: string) => void
+  setTabName: (name: string) => void
+  setTabColor: (id: string, color: string | undefined) => void
+  reorderTabs: (from: number, to: number) => void
+
+  // Panes
+  splitSelected: (dir: PaneDirection) => void
+  deleteSelected: () => void
+  selectPane: (id: string | null) => void
+  updatePane: (id: string, updates: Partial<Pane>) => void
+  addCommand: (cmd: string) => void
+  resizeSplit: (splitId: string, childIndex: number, delta: number) => void
+  togglePaneZoom: (paneId: string) => void
+  focusDirection: (dir: 'up' | 'down' | 'left' | 'right') => void
+  resizePaneUp: () => void
+  resizePaneDown: () => void
+  resizePaneLeft: () => void
+  resizePaneRight: () => void
+
+  // Templates
+  loadTemplate: (name: string) => void
+  resetProject: () => void
+
+  // Output
+  setOutputFormat: (fmt: OutputFormat) => void
 
   // Theme
   setTheme: (t: Partial<ThemeConfig>) => void
@@ -159,6 +201,7 @@ export const useStore = create<AppState>((set, get) => ({
       activeTabId: id,
       selectedPaneId: id,
     }))
+    if (import.meta.env.DEV) console.log('Tab added:', id)
   },
 
   removeTab: (id: string) => {
@@ -176,7 +219,7 @@ export const useStore = create<AppState>((set, get) => ({
   switchTab: (id: string) => {
     set((s) => {
       const t = s.tabs.find((t) => t.id === id)
-      if (!t) return {}
+      if (!t) { console.warn(`switchTab: tab "${id}" not found`); return {} }
       return { activeTabId: id, selectedPaneId: t.root.id }
     })
   },
@@ -282,7 +325,7 @@ export const useStore = create<AppState>((set, get) => ({
     }))
   },
 
-  focusUp: () => {
+  focusDirection: (dir: 'up' | 'down' | 'left' | 'right') => {
     const s = get()
     const tab = s.tabs.find((t) => t.id === s.activeTabId)
     if (!tab || !s.selectedPaneId) return
@@ -293,62 +336,16 @@ export const useStore = create<AppState>((set, get) => ({
     let bestOv = 0
     for (const [id, r] of rects.entries()) {
       if (id === s.selectedPaneId) continue
-      if (Math.abs(cur.y - (r.y + r.h)) > 0.5) continue
-      const ov = Math.max(0, Math.min(cur.x + cur.w, r.x + r.w) - Math.max(cur.x, r.x))
-      if (ov > bestOv) { best = id; bestOv = ov }
-    }
-    if (best) set({ selectedPaneId: best })
-  },
-
-  focusDown: () => {
-    const s = get()
-    const tab = s.tabs.find((t) => t.id === s.activeTabId)
-    if (!tab || !s.selectedPaneId) return
-    const rects = getPaneRects(tab.root, 0, 0, 1000, 1000)
-    const cur = rects.get(s.selectedPaneId)
-    if (!cur) return
-    let best: string | null = null
-    let bestOv = 0
-    for (const [id, r] of rects.entries()) {
-      if (id === s.selectedPaneId) continue
-      if (Math.abs(r.y - (cur.y + cur.h)) > 0.5) continue
-      const ov = Math.max(0, Math.min(cur.x + cur.w, r.x + r.w) - Math.max(cur.x, r.x))
-      if (ov > bestOv) { best = id; bestOv = ov }
-    }
-    if (best) set({ selectedPaneId: best })
-  },
-
-  focusLeft: () => {
-    const s = get()
-    const tab = s.tabs.find((t) => t.id === s.activeTabId)
-    if (!tab || !s.selectedPaneId) return
-    const rects = getPaneRects(tab.root, 0, 0, 1000, 1000)
-    const cur = rects.get(s.selectedPaneId)
-    if (!cur) return
-    let best: string | null = null
-    let bestOv = 0
-    for (const [id, r] of rects.entries()) {
-      if (id === s.selectedPaneId) continue
-      if (Math.abs(cur.x - (r.x + r.w)) > 0.5) continue
-      const ov = Math.max(0, Math.min(cur.y + cur.h, r.y + r.h) - Math.max(cur.y, r.y))
-      if (ov > bestOv) { best = id; bestOv = ov }
-    }
-    if (best) set({ selectedPaneId: best })
-  },
-
-  focusRight: () => {
-    const s = get()
-    const tab = s.tabs.find((t) => t.id === s.activeTabId)
-    if (!tab || !s.selectedPaneId) return
-    const rects = getPaneRects(tab.root, 0, 0, 1000, 1000)
-    const cur = rects.get(s.selectedPaneId)
-    if (!cur) return
-    let best: string | null = null
-    let bestOv = 0
-    for (const [id, r] of rects.entries()) {
-      if (id === s.selectedPaneId) continue
-      if (Math.abs(r.x - (cur.x + cur.w)) > 0.5) continue
-      const ov = Math.max(0, Math.min(cur.y + cur.h, r.y + r.h) - Math.max(cur.y, r.y))
+      let match: boolean
+      if (dir === 'up') match = Math.abs(cur.y - (r.y + r.h)) <= 0.5
+      else if (dir === 'down') match = Math.abs(r.y - (cur.y + cur.h)) <= 0.5
+      else if (dir === 'left') match = Math.abs(cur.x - (r.x + r.w)) <= 0.5
+      else match = Math.abs(r.x - (cur.x + cur.w)) <= 0.5
+      if (!match) continue
+      const isHoriz = dir === 'up' || dir === 'down'
+      const ov = isHoriz
+        ? Math.max(0, Math.min(cur.x + cur.w, r.x + r.w) - Math.max(cur.x, r.x))
+        : Math.max(0, Math.min(cur.y + cur.h, r.y + r.h) - Math.max(cur.y, r.y))
       if (ov > bestOv) { best = id; bestOv = ov }
     }
     if (best) set({ selectedPaneId: best })
@@ -549,6 +546,7 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   addProfile: (name: string, pane: Pane) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, ...rest } = pane
     const profile: PaneProfile = { id: uid(), name, pane: rest }
     set((st) => {

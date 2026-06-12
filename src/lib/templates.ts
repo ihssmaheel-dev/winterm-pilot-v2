@@ -1,22 +1,19 @@
 import type { Tab, TreeNode, TemplateName } from '@/types'
-
-let uid = 1000
-const gid = () => 'n' + ++uid
+import { uid } from '@/lib/utils'
 
 function mkPane(name: string, dir = 'C:\\Projects\\my-project', cmds: string[] = ['code .', 'npm run dev']): TreeNode {
-  return { id: gid(), type: 'pane', name, workingDirectory: dir, commands: [...cmds] }
+  return { id: uid(), type: 'pane', name, workingDirectory: dir, commands: [...cmds] }
 }
 
 function mkSplit(dir: 'horizontal' | 'vertical', children: TreeNode[], sizes: number[]): TreeNode {
-  return { id: gid(), type: 'split', direction: dir, children, sizes }
+  return { id: uid(), type: 'split', direction: dir, children, sizes }
 }
 
 const TEMPLATES: Record<TemplateName, () => { tabs: Tab[] }> = {
   fullstack() {
-    uid = 100
     return {
       tabs: [{
-        id: gid(),
+        id: uid(),
         name: 'App',
         root: mkSplit('vertical', [
           mkPane('Frontend', 'C:\\Projects\\client', ['npm run dev']),
@@ -27,10 +24,9 @@ const TEMPLATES: Record<TemplateName, () => { tabs: Tab[] }> = {
   },
 
   '3tier'() {
-    uid = 200
     return {
       tabs: [{
-        id: gid(),
+        id: uid(),
         name: 'Stack',
         root: mkSplit('vertical', [
           mkPane('Frontend', 'C:\\Projects\\web', ['npm run dev']),
@@ -44,12 +40,11 @@ const TEMPLATES: Record<TemplateName, () => { tabs: Tab[] }> = {
   },
 
   microservices() {
-    uid = 300
     return {
       tabs: [
-        { id: gid(), name: 'Gateway', root: mkPane('Gateway', 'C:\\Projects\\gateway', ['npm start']) },
+        { id: uid(), name: 'Gateway', root: mkPane('Gateway', 'C:\\Projects\\gateway', ['npm start']) },
         {
-          id: gid(),
+          id: uid(),
           name: 'Services',
           root: mkSplit('vertical', [
             mkSplit('horizontal', [
@@ -67,10 +62,9 @@ const TEMPLATES: Record<TemplateName, () => { tabs: Tab[] }> = {
   },
 
   monorepo() {
-    uid = 400
     return {
       tabs: [{
-        id: gid(),
+        id: uid(),
         name: 'Monorepo',
         root: mkSplit('vertical', [
           mkSplit('horizontal', [

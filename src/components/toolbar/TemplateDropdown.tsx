@@ -1,5 +1,6 @@
-import { useRef, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useRef, useState, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
+import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
 
 const TEMPLATE_LIST = [
@@ -60,11 +61,31 @@ interface TemplateDropdownProps {
 
 export function TemplateDropdown({ onSelect }: TemplateDropdownProps) {
   const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
+  const btnRef = useRef<HTMLButtonElement>(null)
+  const [pos, setPos] = useState({ top: 0, left: 0 })
+
+  const updatePos = useCallback(() => {
+    if (btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect()
+      setPos({ top: r.bottom + 4, left: r.left })
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!open) return
+    updatePos()
+    const onScroll = () => updatePos()
+    window.addEventListener('scroll', onScroll, true)
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll, true)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [open, updatePos])
 
   return (
-    <div className="relative" ref={ref}>
-      <Button variant={open ? 'active' : 'ghost'} onClick={() => setOpen(!open)}>
+    <>
+      <Button ref={btnRef} variant={open ? 'active' : 'ghost'} onClick={() => { setOpen((v) => !v); if (!open) requestAnimationFrame(updatePos) }}>
         <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
           <rect x="1" y="1" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
           <rect x="7" y="1" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" />
@@ -76,38 +97,37 @@ export function TemplateDropdown({ onSelect }: TemplateDropdownProps) {
           <path d="M1.5 2.5L4 5l2.5-2.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
         </svg>
       </Button>
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: -4, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -4, scale: 0.97 }}
-            transition={{ duration: 0.1 }}
-            className="absolute top-[calc(100%+4px)] left-0 z-[200] min-w-[220px] p-1 rounded-[12px] bg-bg-surface/85 backdrop-blur-acrylic border border-border-strong shadow-[0_16px_48px_rgba(0,0,0,0.4)]"
-          >
-            <div className="px-[10px] py-[5px] text-[9px] font-bold tracking-[0.12em] uppercase text-text3 border-b border-border mb-[2px]">
-              Choose a template
-            </div>
-            <div className="flex flex-col gap-[1px]">
-              {TEMPLATE_LIST.map((item) => (
-                <div
-                  key={item.key}
-                  onClick={() => { onSelect(item.key); setOpen(false) }}
-                  className="flex items-start gap-[10px] px-[10px] py-[8px] rounded-[6px] cursor-pointer transition-colors duration-100 hover:bg-bg-hover"
-                >
-                  <div className="w-7 h-7 rounded-[6px] bg-bg-elevated border border-border-med flex items-center justify-center flex-shrink-0 mt-[1px]">
-                    {item.icon}
-                  </div>
-                  <div>
-                    <div className="text-[12px] font-semibold text-text">{item.name}</div>
-                    <div className="text-[10px] text-text3 mt-[1px]">{item.desc}</div>
-                  </div>
+      {open && createPortal(
+        <motion.div
+          initial={{ opacity: 0, y: -4, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.1 }}
+          style={{ top: pos.top, left: pos.left }}
+          className="fixed z-[200] min-w-[220px] p-1 rounded-[12px] bg-bg-surface/85 backdrop-blur-acrylic border border-border-strong shadow-[0_16px_48px_rgba(0,0,0,0.4)]"
+        >
+          <div className="px-[10px] py-[5px] text-[9px] font-bold tracking-[0.12em] uppercase text-text3 border-b border-border mb-[2px]">
+            Choose a template
+          </div>
+          <div className="flex flex-col gap-[1px]">
+            {TEMPLATE_LIST.map((item) => (
+              <div
+                key={item.key}
+                onClick={() => { onSelect(item.key); setOpen(false) }}
+                className="flex items-start gap-[10px] px-[10px] py-[8px] rounded-[6px] cursor-pointer transition-colors duration-100 hover:bg-bg-hover"
+              >
+                <div className="w-7 h-7 rounded-[6px] bg-bg-elevated border border-border-med flex items-center justify-center flex-shrink-0 mt-[1px]">
+                  {item.icon}
                 </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+                <div>
+                  <div className="text-[12px] font-semibold text-text">{item.name}</div>
+                  <div className="text-[10px] text-text3 mt-[1px]">{item.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>,
+        document.body
+      )}
+    </>
   )
 }
