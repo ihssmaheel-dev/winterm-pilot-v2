@@ -1,6 +1,50 @@
 import { useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 
+const KBD_RE = /(Ctrl\+[A-Za-z0-9]+|Alt\+[A-Za-z0-9]+|Shift\+[A-Za-z0-9]+|Ctrl\+Shift\+[A-Za-z0-9]+|Enter|↑|↓|←|→|Tab)/g
+
+function fmtText(text: string) {
+  const lines = text.split('\n')
+  return lines.map((line, i) => {
+    const trimmed = line.trim()
+
+    if (trimmed.startsWith('· ')) {
+      const rest = trimmed.slice(2)
+      const colonIdx = rest.indexOf(' — ')
+      if (colonIdx !== -1) {
+        const label = rest.slice(0, colonIdx)
+        const desc = rest.slice(colonIdx + 3)
+        return (
+          <div key={i} className="flex items-baseline gap-[6px] py-[2px]">
+            <span className="text-accent font-semibold shrink-0">· {label}</span>
+            <span className="text-text2">{fmtInline(desc)}</span>
+          </div>
+        )
+      }
+      return <div key={i} className="text-text2 py-[2px]"><span className="text-accent">· </span>{fmtInline(rest)}</div>
+    }
+
+    if (trimmed.length === 0) return <div key={i} className="h-[6px]" />
+
+    return <div key={i} className="text-text2 leading-[1.8]">{fmtInline(trimmed)}</div>
+  })
+}
+
+function fmtInline(text: string) {
+  const parts: React.ReactNode[] = []
+  let last = 0
+  KBD_RE.lastIndex = 0
+  for (;;) {
+    const match = KBD_RE.exec(text)
+    if (!match) break
+    if (match.index > last) parts.push(text.slice(last, match.index))
+    parts.push(<kbd key={last} className="px-[5px] py-[1px] rounded-[3px] bg-bg-elevated border border-border-strong text-[10px] font-mono text-accent whitespace-nowrap">{match[0]}</kbd>)
+    last = KBD_RE.lastIndex
+  }
+  if (last < text.length) parts.push(text.slice(last))
+  return parts.length > 0 ? <>{parts}</> : text
+}
+
 
 const SECTIONS = [
   {
@@ -226,8 +270,8 @@ export function DocsPage() {
             className="mb-[20px] bg-bg-surface border border-border-med rounded-[10px] p-[18px] scroll-mt-[24px]"
           >
             <h2 className="text-[14px] font-bold text-text mb-[10px]">{section.title}</h2>
-            <div className="text-[12px] text-text2 leading-[1.8] whitespace-pre-line">
-              {section.content}
+            <div className="text-[12px] leading-[1.8]">
+              {fmtText(section.content)}
             </div>
           </div>
         ))}
