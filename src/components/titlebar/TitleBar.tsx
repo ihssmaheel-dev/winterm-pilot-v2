@@ -195,26 +195,26 @@ export function TitleBar() {
           <MenuDropdown label="File" isOpen={activeMenu === 'File'} onToggle={() => toggleMenu('File')} onMouseEnter={() => { if (activeMenu) setActiveMenu('File') }} items={[
             {
               label: 'New Project', shortcut: 'Ctrl+N', action: () => resetProject(),
-              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.2"/><path d="M6 3v6M3 6h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>,
+              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="1.5" stroke="currentColor" strokeWidth="1.2" /><path d="M6 3v6M3 6h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>,
             },
-            { divider: true, label: '', action: () => {} },
+            { divider: true, label: '', action: () => { } },
             {
               label: 'Import Layout', shortcut: 'Ctrl+I', action: () => document.querySelector<HTMLElement>('[data-import]')?.click(),
-              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 11V3M3 6l3-3 3 3M11 10H1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 11V3M3 6l3-3 3 3M11 10H1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>,
             },
             {
               label: 'Export Layout', shortcut: 'Ctrl+E', action: () => {
                 downloadJsonFile(useStore.getState().toJSON(), `${useStore.getState().projectName || 'layout'}.json`)
               },
-              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v8M3 6l3 3 3-3M11 10H1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v8M3 6l3 3 3-3M11 10H1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>,
             },
-            { divider: true, label: '', action: () => {} },
+            { divider: true, label: '', action: () => { } },
             {
               label: 'Download Script', shortcut: 'Alt+S', action: () => {
                 const content = getScriptContent()
                 if (content) downloadTextFile(content, `${useStore.getState().projectName || 'launcher'}.bat`)
               },
-              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v8M3.5 6.5L6 9l2.5-2.5M1.5 11h9" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v8M3.5 6.5L6 9l2.5-2.5M1.5 11h9" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>,
             },
           ]} />
 
@@ -222,24 +222,24 @@ export function TitleBar() {
           <MenuDropdown label="Edit" isOpen={activeMenu === 'Edit'} onToggle={() => toggleMenu('Edit')} onMouseEnter={() => { if (activeMenu) setActiveMenu('Edit') }} items={[
             {
               label: 'Undo', shortcut: 'Ctrl+Z', action: () => undo(),
-              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7 9H4a3 3 0 010-6h4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M5.5 6.5L4 5l1.5-1.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7 9H4a3 3 0 010-6h4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /><path d="M5.5 6.5L4 5l1.5-1.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>,
             },
             {
               label: 'Redo', shortcut: 'Ctrl+Shift+Z', action: () => redo(),
-              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M5 9h3a3 3 0 000-6H4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M6.5 6.5L8 5 6.5 3.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M5 9h3a3 3 0 000-6H4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /><path d="M6.5 6.5L8 5 6.5 3.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>,
             },
-            { divider: true, label: '', action: () => {} },
+            { divider: true, label: '', action: () => { } },
             {
               label: 'Split Horizontal', shortcut: 'Alt+H', action: () => splitSelected('horizontal'),
-              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="4.5" rx="1" stroke="currentColor" strokeWidth="1.2"/><rect x="1" y="6.5" width="10" height="4.5" rx="1" stroke="currentColor" strokeWidth="1.2"/></svg>,
+              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="4.5" rx="1" stroke="currentColor" strokeWidth="1.2" /><rect x="1" y="6.5" width="10" height="4.5" rx="1" stroke="currentColor" strokeWidth="1.2" /></svg>,
             },
             {
               label: 'Split Vertical', shortcut: 'Alt+V', action: () => splitSelected('vertical'),
-              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="4.5" height="10" rx="1" stroke="currentColor" strokeWidth="1.2"/><rect x="6.5" y="1" width="4.5" height="10" rx="1" stroke="currentColor" strokeWidth="1.2"/></svg>,
+              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="4.5" height="10" rx="1" stroke="currentColor" strokeWidth="1.2" /><rect x="6.5" y="1" width="4.5" height="10" rx="1" stroke="currentColor" strokeWidth="1.2" /></svg>,
             },
             {
               label: 'Delete Pane', shortcut: 'Alt+D', action: () => deleteSelected(),
-              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3.5h8M5 3.5V2.5h2v1M4.5 3.5l.5 6M7.5 3.5l-.5 6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>,
+              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 3.5h8M5 3.5V2.5h2v1M4.5 3.5l.5 6M7.5 3.5l-.5 6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>,
             },
           ]} />
 
@@ -247,22 +247,22 @@ export function TitleBar() {
           <MenuDropdown label="View" isOpen={activeMenu === 'View'} onToggle={() => toggleMenu('View')} onMouseEnter={() => { if (activeMenu) setActiveMenu('View') }} items={[
             {
               label: 'Toggle Fullscreen', shortcut: '', action: () => setFullscreen(!fullscreen),
-              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 4V2h2.5M7 2h2.5v2M9.5 8v2H7M4 10H1.5V8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>,
+              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 4V2h2.5M7 2h2.5v2M9.5 8v2H7M4 10H1.5V8" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>,
             },
             {
               label: 'Zoom Pane', shortcut: 'Alt+Z', action: () => { if (selectedPane) togglePaneZoom(selectedPane.id) },
-              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1v4M5 1H1M11 7v4H7M11 11V7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>,
+              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1v4M5 1H1M11 7v4H7M11 11V7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>,
             },
-            { divider: true, label: '', action: () => {} },
+            { divider: true, label: '', action: () => { } },
             {
-              label: 'Theme', action: () => {},
+              label: 'Theme', action: () => { },
               submenu: [
                 { label: 'Dark', action: () => setTheme({ mode: 'dark' }), checked: theme.mode === 'dark' },
                 { label: 'Light', action: () => setTheme({ mode: 'light' }), checked: theme.mode === 'light' },
               ],
             },
             {
-              label: 'Accent Color', action: () => {},
+              label: 'Accent Color', action: () => { },
               submenu: PANE_COLORS.filter(c => c.value).map((c) => ({
                 label: c.name,
                 action: () => setTheme({ accent: c.value }),
@@ -275,16 +275,16 @@ export function TitleBar() {
           <MenuDropdown label="Help" isOpen={activeMenu === 'Help'} onToggle={() => toggleMenu('Help')} onMouseEnter={() => { if (activeMenu) setActiveMenu('Help') }} items={[
             {
               label: 'Keyboard Shortcuts', action: () => navigate('/docs#shortcuts'),
-              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="2" width="10" height="8" rx="1" stroke="currentColor" strokeWidth="1.2"/><path d="M4 6h4M4 8h2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>,
+              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="2" width="10" height="8" rx="1" stroke="currentColor" strokeWidth="1.2" /><path d="M4 6h4M4 8h2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>,
             },
             {
               label: 'About WinTerm Pilot', action: () => setShowAbout(true),
-              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" strokeWidth="1.2"/><path d="M6 5.5v3M6 4v.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>,
+              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" strokeWidth="1.2" /><path d="M6 5.5v3M6 4v.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" /></svg>,
             },
-            { divider: true, label: '', action: () => {} },
+            { divider: true, label: '', action: () => { } },
             {
               label: 'Documentation', action: () => navigate('/docs'),
-              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2.5v7M3 5l3-2.5L9 5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+              icon: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2.5v7M3 5l3-2.5L9 5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" /></svg>,
             },
           ]} />
         </div>
@@ -299,7 +299,7 @@ export function TitleBar() {
         {/* GitHub + Close */}
         <div className="flex h-full flex-shrink-0">
           <a
-            href="https://github.com/your-username/winterm-pilot"
+            href="https://github.com/ihssmaheel-dev/winterm-pilot-v2"
             target="_blank"
             rel="noopener noreferrer"
             className="w-[38px] h-full flex items-center justify-center text-text3 hover:text-accent transition-colors duration-100 hover:bg-bg-hover"

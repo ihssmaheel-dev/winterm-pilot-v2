@@ -340,7 +340,7 @@ export function DocsPage() {
         {/* GitHub */}
         <div className="text-center pb-[48px]">
           <a
-            href="https://github.com/your-username/winterm-pilot"
+            href="https://github.com/ihssmaheel-dev/winterm-pilot-v2"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-[8px] px-[16px] py-[9px] rounded-[8px] bg-bg-surface border border-border-med text-[12px] text-text2 hover:text-accent hover:border-accent/30 transition-all duration-200 no-underline"
