@@ -1,73 +1,77 @@
-# React + TypeScript + Vite
+# WinTerm Pilot v2
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> A visual Windows Terminal script builder — create, organize, and export terminal profiles and scripts with drag-and-drop ease.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## What is WinTerm Pilot?
 
-## React Compiler
+WinTerm Pilot is a web-based tool for building and managing Windows Terminal scripts and profiles through a clean, interactive UI. Instead of hand-editing JSON config files, you can visually compose your terminal setup, reorder items with drag-and-drop, and export a ready-to-use script — no terminal expertise required.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+- **Visual script builder** — Compose Windows Terminal profiles and scripts through a structured UI
+- **Drag-and-drop reordering** — Rearrange items intuitively using dnd-kit
+- **Smooth animations** — Polished interactions powered by Framer Motion
+- **Multi-page navigation** — Clean routing via React Router
+- **Persistent state** — App state managed with Zustand
+- **Fully typed** — Written in TypeScript throughout
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Tech Stack
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+| Layer | Technology |
+|---|---|
+| Framework | React 19 |
+| Language | TypeScript |
+| Build tool | Vite |
+| Styling | Tailwind CSS v4 |
+| State | Zustand |
+| Drag & Drop | dnd-kit |
+| Animations | Framer Motion |
+| Routing | React Router v7 |
+| Icons | Lucide React |
+| Testing | Vitest |
+| Deployment | Netlify |
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Getting Started
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Prerequisites
+
+- Node.js 18+
+- npm
+
+### Installation
+
+```bash
+git clone https://github.com/ihssmaheel-dev/winterm-pilot-v2.git
+cd winterm-pilot-v2
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Development
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+### Build
+
+```bash
+npm run build
+```
+
+### Preview production build
+
+```bash
+npm run preview
+```
+
+### Run tests
+
+```bash
+npm test
+```
+
+## License
+
+MIT — see [LICENSE](./LICENSE) for details.
