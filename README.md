@@ -2,6 +2,8 @@
 
 > A visual Windows Terminal script builder — create, organize, and export terminal profiles and scripts with drag-and-drop ease.
 
+🔗 **Live Demo:** [winterm-pilot.netlify.app](https://winterm-pilot.netlify.app)
+
 ---
 
 ## What is WinTerm Pilot?
